@@ -1,13 +1,14 @@
 package com.puwd.jwt.interceptor;
 
-import com.auth0.jwt.interfaces.Claim;
+import com.puwd.jwt.exception.UnAuthenticateException;
 import com.puwd.jwt.util.JwtUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+
+import static com.puwd.jwt.util.JwtUtil.TOKEN_KEY;
 
 /**
  * @auther puwd
@@ -21,24 +22,30 @@ public class JwtInterceptor implements HandlerInterceptor {
         // 允许跨域
         response.setHeader("Access-Control-Allow-Origin", "*");
 
-        String token = request.getHeader("authorization");
+        String token = request.getHeader(TOKEN_KEY);
 
         if(token == null || "".equals(token)){
             Cookie[] cookies = request.getCookies();
             for (Cookie cookie : cookies) {
-                if(cookie.getName().equals("authorization")){
+                if(cookie.getName().equals(TOKEN_KEY)){
                     token = cookie.getValue();
                 }
             }
         }
 
         if(token == null || "".equals(token)){
-            throw new RuntimeException("无token，请重新登录");
+            request.setAttribute("exception", new UnAuthenticateException("该用户未登录"));
+            request.getRequestDispatcher("/exception").forward(request, response);
+            return false;
         }
 
-        String id = JwtUtil.getUserId(token);
-
-        Map<String, Claim> map =  JwtUtil.getClaims(token);
+        try {
+            JwtUtil.getClaims(token);
+        } catch (Exception e) {
+            request.setAttribute("exception", e);
+            request.getRequestDispatcher("/exception").forward(request, response);
+            return false;
+        }
 
         return true;
     }

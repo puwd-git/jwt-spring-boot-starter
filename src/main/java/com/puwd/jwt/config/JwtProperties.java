@@ -12,9 +12,7 @@ public class JwtProperties {
 
     private boolean enable = false;
 
-    private long expire = 24 * 60 *60;
-
-    private String secret;
+    private long expire = 60 * 60 * 1000;
 
     public boolean isEnable() {
         return enable;
@@ -30,13 +28,5 @@ public class JwtProperties {
 
     public void setExpire(long expire) {
         this.expire = expire;
-    }
-
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
     }
 }

@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.puwd.jwt.config.JwtAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.puwd.jwt.config.JwtAutoConfiguration,\
+  com.puwd.jwt.config.WebConfig

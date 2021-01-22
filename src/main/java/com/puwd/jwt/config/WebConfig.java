@@ -2,6 +2,10 @@ package com.puwd.jwt.config;
 
 import com.puwd.jwt.interceptor.JwtInterceptor;
 import com.puwd.jwt.interceptor.LoginInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,24 +18,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @Description
  */
 @Configuration
-@ConditionalOnProperty(prefix = "jwt", name = "enable", havingValue = "true")
+@ConditionalOnBean({LoginInterceptor.class,JwtInterceptor.class})
+@AutoConfigureAfter(JwtAutoConfiguration.class)
 public class WebConfig implements WebMvcConfigurer {
 
-    @Bean
-    public JwtInterceptor jwtInterceptor(){
-        return new JwtInterceptor();
-    }
 
-    @Bean
-    public LoginInterceptor loginInterceptor(){
-        return new LoginInterceptor();
-    }
+    @Autowired
+    private LoginInterceptor loginInterceptor;
+
+    @Autowired
+    private JwtInterceptor jwtInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor())
+        registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/login");
-        registry.addInterceptor(jwtInterceptor())
+        registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/authc/**");
     }
 }
