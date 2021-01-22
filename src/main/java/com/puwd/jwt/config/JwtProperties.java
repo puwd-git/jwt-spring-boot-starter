@@ -14,6 +14,8 @@ public class JwtProperties {
 
     private long expire = 60 * 60 * 1000;
 
+    private long extensionTime = 5 * 60 * 1000;
+
     public boolean isEnable() {
         return enable;
     }
@@ -28,5 +30,13 @@ public class JwtProperties {
 
     public void setExpire(long expire) {
         this.expire = expire;
+    }
+
+    public long getExtensionTime() {
+        return extensionTime;
+    }
+
+    public void setExtensionTime(long extensionTime) {
+        this.extensionTime = extensionTime;
     }
 }

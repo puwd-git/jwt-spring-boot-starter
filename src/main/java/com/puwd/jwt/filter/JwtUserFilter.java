@@ -91,7 +91,7 @@ public class JwtUserFilter implements Filter {
 
         // 获取token过期时间 小于十分钟续签
         Date expiresAt = JwtUtil.getExpiresAt(token);
-        if((expiresAt.getTime()-System.currentTimeMillis()) < 1000 * 60 * 10){
+        if((expiresAt.getTime()-System.currentTimeMillis()) < jwtProperties.getExtensionTime()){
             response.setCharacterEncoding("UTF-8");
             response.setContentType("text/json; charset=utf-8");
             token = JwtUtil.createToken(jwtUserDto, jwtProperties.getExpire());
