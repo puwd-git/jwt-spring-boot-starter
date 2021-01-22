@@ -1,12 +1,18 @@
 package com.puwd.jwt.interceptor;
 
+import com.auth0.jwt.interfaces.Claim;
+import com.puwd.jwt.config.JwtProperties;
 import com.puwd.jwt.exception.UnAuthenticateException;
 import com.puwd.jwt.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.Date;
+import java.util.Map;
 
 import static com.puwd.jwt.util.JwtUtil.TOKEN_KEY;
 
@@ -16,6 +22,8 @@ import static com.puwd.jwt.util.JwtUtil.TOKEN_KEY;
  * @Description
  */
 public class JwtInterceptor implements HandlerInterceptor {
+
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

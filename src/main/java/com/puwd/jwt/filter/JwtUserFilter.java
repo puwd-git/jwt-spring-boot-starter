@@ -1,6 +1,7 @@
 package com.puwd.jwt.filter;
 
 
+import com.puwd.jwt.config.JwtProperties;
 import com.puwd.jwt.dto.JwtUserDto;
 import com.puwd.jwt.exception.UnAuthenticateException;
 import com.puwd.jwt.exception.UserNotFoundException;
@@ -13,7 +14,9 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 import static com.puwd.jwt.util.JwtUtil.TOKEN_KEY;
 
@@ -27,6 +30,9 @@ public class JwtUserFilter implements Filter {
 
     @Autowired
     private IJwtUserService iJwtUserService;
+
+    @Autowired
+    private JwtProperties jwtProperties;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -42,6 +48,8 @@ public class JwtUserFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String token = request.getHeader(TOKEN_KEY);
 
@@ -80,6 +88,17 @@ public class JwtUserFilter implements Filter {
 
         JwtUserRequestWrapper requestWrapper = new JwtUserRequestWrapper(request);
         requestWrapper.addObject(jwtUserDto);
-        filterChain.doFilter(requestWrapper, servletResponse);
+
+        // 获取token过期时间 小于十分钟续签
+        Date expiresAt = JwtUtil.getExpiresAt(token);
+        if((expiresAt.getTime()-System.currentTimeMillis()) < 1000 * 60 * 10){
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("text/json; charset=utf-8");
+            token = JwtUtil.createToken(jwtUserDto, jwtProperties.getExpire());
+            response.addHeader(TOKEN_KEY,token);
+            Cookie cookie = new Cookie(TOKEN_KEY,token);
+            response.addCookie(cookie);
+        }
+        filterChain.doFilter(requestWrapper, response);
     }
 }

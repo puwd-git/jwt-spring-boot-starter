@@ -56,6 +56,10 @@ public class JwtUtil {
         return JWT.decode(jwtToken).getSubject();
     }
 
+    public static Date getExpiresAt(String jwtToken){
+        return JWT.decode(jwtToken).getExpiresAt();
+    }
+
     public static Map<String, Claim> getClaims(String jwtToken) throws Exception {
         Algorithm algorithm = Algorithm.HMAC256(SECRET);
         JWTVerifier verifier = JWT.require(algorithm).build();
