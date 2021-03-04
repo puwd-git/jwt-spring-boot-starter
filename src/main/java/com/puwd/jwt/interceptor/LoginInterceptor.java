@@ -59,7 +59,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         response.addHeader(TOKEN_KEY,token);
         Cookie cookie = new Cookie(TOKEN_KEY,token);
         response.addCookie(cookie);
-        response.getWriter().write(objectMapper.writeValueAsString(resultVo));
+        String data = objectMapper.writeValueAsString(resultVo);
+        response.getWriter().write(data);
         return false;
     }
 }
