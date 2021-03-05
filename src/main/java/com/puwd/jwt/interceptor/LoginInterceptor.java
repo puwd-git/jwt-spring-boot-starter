@@ -58,6 +58,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         response.setContentType("text/json; charset=utf-8");
         response.addHeader(TOKEN_KEY,token);
         Cookie cookie = new Cookie(TOKEN_KEY,token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
         String data = objectMapper.writeValueAsString(resultVo);
         response.getWriter().write(data);
